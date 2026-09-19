@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, View } from 'react-native';
 import { RefreshControl } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColors } from '@/hooks/useColors';
 import { ChoicePill, CustomInput, EmptyState, ImageCard, LoadingIndicator } from '@/components/ui';
 import { FotoImage, GalleryFilter } from '@/types';
@@ -11,6 +12,7 @@ const API_URL = 'https://picsum.photos/v2/list?page=1&limit=50';
 
 export default function HomeScreen() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const [images, setImages] = useState<FotoImage[]>([]);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<GalleryFilter>('all');
@@ -53,7 +55,7 @@ export default function HomeScreen() {
   }, [filter, images, search, sort, visibleCount]);
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: Math.max(insets.top + 16, Platform.OS === 'web' ? 67 : 0) }]}>
       <View style={styles.header}><View><Text style={[styles.eyebrow, { color: colors.accent }]}>FOTO OWL / EXPLORE</Text><Text style={[styles.title, { color: colors.foreground }]}>Find your next favorite.</Text></View><View style={[styles.headerIcon, { backgroundColor: colors.secondary }]}><Feather name="aperture" size={20} color={colors.primary} /></View></View>
       <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}><Feather name="search" size={18} color={colors.mutedForeground} /><View style={{ flex: 1 }}><CustomInput label="" value={search} onChangeText={setSearch} placeholder="Search by author" /></View></View>
       <View style={styles.filters}>{[['all', 'All images'], ['am', 'Author A–M'], ['nz', 'Author N–Z']].map(([value, label]) => <ChoicePill key={value} label={label} selected={filter === value} onPress={() => { setFilter(value as GalleryFilter); setVisibleCount(16); }} />)}</View>
