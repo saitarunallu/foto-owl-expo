@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Alert, Keyboard, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useColors } from '@/hooks/useColors';
 import { useApp } from '@/context/AppContext';
 import { CustomButton, CustomInput, LogoMark } from '@/components/ui';
 import { KeyboardAwareScrollViewCompat } from '@/components/KeyboardAwareScrollViewCompat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const { login } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +31,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <KeyboardAwareScrollViewCompat contentContainerStyle={[styles.container, { backgroundColor: colors.background }]} bottomOffset={20}>
+    <KeyboardAwareScrollViewCompat contentContainerStyle={[styles.container, { backgroundColor: colors.background, paddingTop: Math.max(insets.top + 28, Platform.OS === 'web' ? 67 : 0) }]} bottomOffset={20}>
       <View style={styles.brand}>
         <LogoMark size={62} />
         <Text style={[styles.kicker, { color: colors.accent }]}>FOTO OWL</Text>
