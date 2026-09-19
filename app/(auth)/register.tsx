@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Keyboard, StyleSheet, Text, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { useColors } from '@/hooks/useColors';
 import { useApp } from '@/context/AppContext';
 import { CustomButton, CustomInput, LogoMark, RadioOption, SelectField } from '@/components/ui';
 import { KeyboardAwareScrollViewCompat } from '@/components/KeyboardAwareScrollViewCompat';
 import { Gender, User } from '@/types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const cities = ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai', 'Other'];
 const genders: Gender[] = ['Male', 'Female', 'Other'];
@@ -13,6 +14,7 @@ type RegistrationForm = Omit<User, 'gender'> & { gender: Gender | ''; confirmPas
 
 export default function RegisterScreen() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const { registerUser } = useApp();
   const [form, setForm] = useState<RegistrationForm>({ fullName: '', email: '', gender: '', mobile: '', address: '', city: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
@@ -40,7 +42,7 @@ export default function RegisterScreen() {
   }
 
   return (
-    <KeyboardAwareScrollViewCompat contentContainerStyle={[styles.container, { backgroundColor: colors.background }]} bottomOffset={20}>
+    <KeyboardAwareScrollViewCompat contentContainerStyle={[styles.container, { backgroundColor: colors.background, paddingTop: Math.max(insets.top + 24, Platform.OS === 'web' ? 67 : 0) }]} bottomOffset={20}>
       <View style={styles.heading}>
         <LogoMark size={48} />
         <View style={{ flex: 1, gap: 3 }}><Text style={[styles.title, { color: colors.foreground }]}>Create your account</Text><Text style={{ color: colors.mutedForeground }}>Start building your visual collection.</Text></View>
