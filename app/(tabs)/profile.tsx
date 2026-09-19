@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
@@ -7,12 +7,14 @@ import { useApp } from '@/context/AppContext';
 import { CustomButton, CustomInput, LogoMark, RadioOption, SelectField } from '@/components/ui';
 import { Gender, User } from '@/types';
 import { KeyboardAwareScrollViewCompat } from '@/components/KeyboardAwareScrollViewCompat';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const genders: Gender[] = ['Male', 'Female', 'Other'];
 const cities = ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai', 'Other'];
 
 export default function ProfileScreen() {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const { user, updateProfile, logout, theme, setTheme } = useApp();
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<User | null>(user);
@@ -31,11 +33,11 @@ export default function ProfileScreen() {
   }
   async function handleLogout() { await logout(); router.replace('/(auth)/login'); }
   return (
-    <KeyboardAwareScrollViewCompat contentContainerStyle={[styles.container, { backgroundColor: colors.background }]} bottomOffset={20}>
+    <KeyboardAwareScrollViewCompat contentContainerStyle={[styles.container, { backgroundColor: colors.background, paddingTop: Math.max(insets.top + 16, Platform.OS === 'web' ? 67 : 0) }]} bottomOffset={20}>
       <View style={styles.header}><View style={styles.identity}><LogoMark size={52} /><View><Text style={[styles.eyebrow, { color: colors.accent }]}>YOUR ACCOUNT</Text><Text style={[styles.title, { color: colors.foreground }]}>Profile</Text></View></View><Pressable onPress={() => setEditing((current) => !current)} style={[styles.editIcon, { backgroundColor: colors.secondary }]}><Feather name={editing ? 'x' : 'edit-2'} size={18} color={colors.primary} /></Pressable></View>
       {!editing ? <View style={styles.profileContent}>
-        <View style={[styles.heroCard, { backgroundColor: colors.primary }]}><Text style={styles.heroName}>{user.fullName}</Text><Text style={styles.heroEmail}>{user.email}</Text><View style={styles.heroBadge}><Feather name="shield" size={13} color={colors.primaryForeground} /><Text style={styles.heroBadgeText}>Stored locally</Text></View></View>
-        <InfoRow icon="phone" label="Mobile number" value={user.mobile} /><InfoRow icon="map-pin" label="Location" value={`${user.city} · ${user.address}`} /><InfoRow icon="user" label="Gender" value={user.gender} />
+        <View style={[styles.heroCard, { backgroundColor: colors.primary }]}><Text style={[styles.heroName, { color: colors.primaryForeground }]}>{user.fullName}</Text><Text style={[styles.heroEmail, { color: colors.primaryForeground }]}>{user.email}</Text><View style={styles.heroBadge}><Feather name="shield" size={13} color={colors.primaryForeground} /><Text style={[styles.heroBadgeText, { color: colors.primaryForeground }]}>Stored locally</Text></View></View>
+         <InfoRow icon="phone" label="Mobile number" value={user.mobile} /><InfoRow icon="map-pin" label="Location" value={`${user.city} · ${user.address}`} /><InfoRow icon="user" label="Gender" value={user.gender} />
       </View> : <View style={[styles.form, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <CustomInput label="Full name" value={form.fullName} onChangeText={(value) => setField('fullName', value)} />
         <CustomInput label="Email address" value={form.email} onChangeText={(value) => setField('email', value)} keyboardType="email-address" />
@@ -57,10 +59,10 @@ function InfoRow({ icon, label, value }: { icon: keyof typeof Feather.glyphMap; 
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, paddingHorizontal: 19, paddingTop: 57, paddingBottom: 100, gap: 18 },
+  container: { flexGrow: 1, paddingHorizontal: 19, paddingBottom: 100, gap: 18 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   identity: { flexDirection: 'row', alignItems: 'center', gap: 13 }, eyebrow: { fontSize: 11, letterSpacing: 1.7, fontWeight: '800', marginBottom: 5 }, title: { fontSize: 30, fontWeight: '700' }, editIcon: { width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  profileContent: { gap: 4 }, heroCard: { borderRadius: 22, padding: 20, gap: 5, marginBottom: 9 }, heroName: { color: '#FFFDF8', fontSize: 23, fontWeight: '700' }, heroEmail: { color: '#D9E6E5', fontSize: 14 }, heroBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14 }, heroBadgeText: { color: '#FFFDF8', fontSize: 12, fontWeight: '600' },
+  profileContent: { gap: 4 }, heroCard: { borderRadius: 22, padding: 20, gap: 5, marginBottom: 9 }, heroName: { fontSize: 23, fontWeight: '700' }, heroEmail: { fontSize: 14, opacity: 0.85 }, heroBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 14 }, heroBadgeText: { fontSize: 12, fontWeight: '600' },
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: 13, paddingVertical: 14, borderBottomWidth: 1 }, infoIcon: { width: 35, height: 35, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }, infoLabel: { fontSize: 12 }, infoValue: { fontSize: 15, fontWeight: '600' },
   form: { borderRadius: 22, borderWidth: 1, padding: 17, gap: 16 }, field: { gap: 8 }, label: { fontSize: 13, fontWeight: '700' }, choiceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 },
   preference: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderRadius: 17, padding: 15 }, preferenceTitle: { fontSize: 15, fontWeight: '700', marginBottom: 3 },
