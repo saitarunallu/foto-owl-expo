@@ -29,6 +29,9 @@ export function CustomButton({ label, onPress, variant = 'primary', icon, disabl
     <Pressable
       disabled={disabled}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      accessibilityLabel={label}
       style={({ pressed }) => [styles.button, { backgroundColor, borderColor: colors.border, opacity: disabled ? 0.45 : pressed ? 0.72 : 1 }, variant === 'ghost' && styles.ghostButton]}
     >
       {icon ? <Feather name={icon} size={17} color={textColor} /> : null}
@@ -58,6 +61,8 @@ export function CustomInput({ label, value, onChangeText, placeholder, secureTex
         placeholderTextColor={colors.mutedForeground}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        autoCapitalize={keyboardType === 'email-address' || secureTextEntry ? 'none' : 'sentences'}
+        autoCorrect={keyboardType === 'email-address' || secureTextEntry ? false : true}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
         style={[styles.input, { color: colors.foreground, borderColor: error ? colors.destructive : colors.input, backgroundColor: colors.card }, multiline && styles.multilineInput]}
@@ -70,7 +75,7 @@ export function CustomInput({ label, value, onChangeText, placeholder, secureTex
 export function ChoicePill({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   const colors = useColors();
   return (
-    <Pressable onPress={onPress} style={[styles.pill, { borderColor: selected ? colors.primary : colors.border, backgroundColor: selected ? colors.primary : colors.card }]}>
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ selected }} style={[styles.pill, { borderColor: selected ? colors.primary : colors.border, backgroundColor: selected ? colors.primary : colors.card }]}>
       <Text style={{ color: selected ? colors.primaryForeground : colors.secondaryForeground, fontWeight: '600', fontSize: 13 }}>{label}</Text>
     </Pressable>
   );
@@ -79,7 +84,7 @@ export function ChoicePill({ label, selected, onPress }: { label: string; select
 export function RadioOption({ label, selected, onPress }: { label: string; selected: boolean; onPress: () => void }) {
   const colors = useColors();
   return (
-    <Pressable onPress={onPress} style={styles.radioOption}>
+    <Pressable onPress={onPress} accessibilityRole="radio" accessibilityState={{ selected }} style={styles.radioOption}>
       <View style={[styles.radioCircle, { borderColor: selected ? colors.primary : colors.input }]}>
         {selected ? <View style={[styles.radioDot, { backgroundColor: colors.primary }]} /> : null}
       </View>
@@ -100,7 +105,7 @@ export function SelectField({ label, value, placeholder, options, onChange }: {
   return (
     <View style={styles.inputWrap}>
       <Text style={[styles.inputLabel, { color: colors.secondaryForeground }]}>{label}</Text>
-      <Pressable onPress={() => setVisible(true)} style={[styles.selectField, { borderColor: colors.input, backgroundColor: colors.card }]}>
+      <Pressable onPress={() => setVisible(true)} accessibilityRole="button" accessibilityLabel={value || placeholder} style={[styles.selectField, { borderColor: colors.input, backgroundColor: colors.card }]}>
         <Text style={{ color: value ? colors.foreground : colors.mutedForeground, fontSize: 15 }}>{value || placeholder}</Text>
         <Feather name="chevron-down" size={18} color={colors.mutedForeground} />
       </Pressable>
@@ -143,12 +148,17 @@ export function ImageCard({ image, onPress }: { image: FotoImage; onPress: () =>
   const { isFavorite, toggleFavorite } = useApp();
   const favorite = isFavorite(image.id);
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.imageCard, { backgroundColor: colors.card, borderColor: colors.border, opacity: pressed ? 0.82 : 1 }]}>
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`Open image by ${image.author}`} style={({ pressed }) => [styles.imageCard, { backgroundColor: colors.card, borderColor: colors.border, opacity: pressed ? 0.82 : 1 }]}>
       <View>
-        <Image source={{ uri: image.download_url }} style={styles.thumbnail} />
+        <Image source={{ uri: image.download_url }} style={[styles.thumbnail, { backgroundColor: colors.muted }]} />
         <Pressable
           hitSlop={10}
-          onPress={() => void toggleFavorite(image)}
+          accessibilityRole="button"
+          accessibilityLabel={favorite ? `Remove ${image.author} from favorites` : `Add ${image.author} to favorites`}
+          onPress={(event) => {
+            event.stopPropagation();
+            void toggleFavorite(image);
+          }}
           style={[styles.heartButton, { backgroundColor: colors.card }]}
         >
           <Feather name="heart" size={16} color={favorite ? colors.destructive : colors.mutedForeground} fill={favorite ? colors.destructive : 'none'} />
@@ -189,7 +199,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 18, fontWeight: '700', marginTop: 2 },
   emptyDescription: { textAlign: 'center', fontSize: 14, lineHeight: 20, maxWidth: 280 },
   imageCard: { flex: 1, borderWidth: 1, borderRadius: 18, overflow: 'hidden', margin: 5, minWidth: 0 },
-  thumbnail: { width: '100%', aspectRatio: 1.05, backgroundColor: '#d9d3c9' },
+  thumbnail: { width: '100%', aspectRatio: 1.05 },
   heartButton: { width: 31, height: 31, borderRadius: 16, alignItems: 'center', justifyContent: 'center', position: 'absolute', top: 9, right: 9 },
   cardMeta: { padding: 11, gap: 3 },
   author: { fontSize: 14, fontWeight: '700' },
