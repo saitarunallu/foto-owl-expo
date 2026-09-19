@@ -6,12 +6,14 @@
     "preview": {
       "distribution": "internal",
       "node": "20.19.4",
+      "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
       "android": {
         "buildType": "apk"
       }
     },
     "production": {
       "node": "20.19.4",
+      "image": "ubuntu-26.04-jdk-17-ndk-r27b-sdk-57",
       "android": {
         "buildType": "apk"
       }
