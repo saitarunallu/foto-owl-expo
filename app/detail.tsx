@@ -25,7 +25,7 @@ export default function DetailScreen() {
     if (Platform.OS === 'web') { Alert.alert('Device download', 'Gallery saving is available in the Expo mobile app.'); return; }
     setDownloading(true);
     try {
-      const MediaLibrary = await import('expo-media-library');
+      const MediaLibrary = await import('expo-media-library/legacy');
       const permission = await MediaLibrary.requestPermissionsAsync();
       if (!permission.granted) { Alert.alert('Permission needed', 'Allow gallery access to save this image.'); return; }
       const target = new File(Paths.cache, `foto-owl-${image.id}.jpg`);
