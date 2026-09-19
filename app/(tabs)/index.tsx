@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 import { RefreshControl } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useColors } from '@/hooks/useColors';
-import { ChoicePill, CustomInput, EmptyState, ImageCard, LoadingIndicator } from '@/components/ui';
+import { ChoicePill, EmptyState, ImageCard, LoadingIndicator } from '@/components/ui';
 import { FotoImage, GalleryFilter } from '@/types';
 
 const API_URL = 'https://picsum.photos/v2/list?page=1&limit=50';
@@ -57,7 +57,20 @@ export default function HomeScreen() {
   return (
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: Math.max(insets.top + 16, Platform.OS === 'web' ? 67 : 0) }]}>
       <View style={styles.header}><View><Text style={[styles.eyebrow, { color: colors.accent }]}>FOTO OWL / EXPLORE</Text><Text style={[styles.title, { color: colors.foreground }]}>Find your next favorite.</Text></View><View style={[styles.headerIcon, { backgroundColor: colors.secondary }]}><Feather name="aperture" size={20} color={colors.primary} /></View></View>
-      <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}><Feather name="search" size={18} color={colors.mutedForeground} /><View style={{ flex: 1 }}><CustomInput label="" value={search} onChangeText={setSearch} placeholder="Search by author" /></View></View>
+      <View style={[styles.searchWrap, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Feather name="search" size={18} color={colors.mutedForeground} />
+        <TextInput
+          accessibilityLabel="Search by author"
+          value={search}
+          onChangeText={setSearch}
+          placeholder="Search by author"
+          placeholderTextColor={colors.mutedForeground}
+          autoCapitalize="none"
+          autoCorrect={false}
+          returnKeyType="search"
+          style={[styles.searchInput, { color: colors.foreground }]}
+        />
+      </View>
       <View style={styles.filters}>{[['all', 'All images'], ['am', 'Author A–M'], ['nz', 'Author N–Z']].map(([value, label]) => <ChoicePill key={value} label={label} selected={filter === value} onPress={() => { setFilter(value as GalleryFilter); setVisibleCount(16); }} />)}</View>
       <View style={styles.sortRow}><Text style={[styles.sortLabel, { color: colors.mutedForeground }]}>Sort by author</Text><ChoicePill label="A–Z" selected={sort === 'az'} onPress={() => setSort('az')} /><ChoicePill label="Z–A" selected={sort === 'za'} onPress={() => setSort('za')} /></View>
       {loading ? <LoadingIndicator /> : error ? <EmptyState icon="wifi-off" title="Gallery unavailable" description={error} action={{ label: 'Try again', onPress: () => void loadImages() }} /> : images.length === 0 ? <EmptyState title="No images found" description="The gallery returned no photos." /> : filteredImages.length === 0 ? <EmptyState icon="search" title="No matches" description="Try another author or filter." /> : (
@@ -73,7 +86,8 @@ const styles = StyleSheet.create({
   eyebrow: { fontSize: 11, letterSpacing: 1.8, fontWeight: '800', marginBottom: 7 },
   title: { fontSize: 25, lineHeight: 30, fontWeight: '700', letterSpacing: -0.5, maxWidth: 290 },
   headerIcon: { height: 43, width: 43, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 14, borderRadius: 15, borderWidth: 1, height: 53, marginBottom: 13 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 14, borderRadius: 15, borderWidth: 1, minHeight: 54, marginBottom: 13 },
+  searchInput: { flex: 1, minWidth: 0, height: 52, paddingHorizontal: 0, fontSize: 15 },
   filters: { flexDirection: 'row', gap: 7, marginBottom: 9 },
   sortRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 7 },
   sortLabel: { fontSize: 12, fontWeight: '600', marginRight: 2 },
