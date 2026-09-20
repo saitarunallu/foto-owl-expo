@@ -68,6 +68,8 @@ export default function HomeScreen() {
           autoCapitalize="none"
           autoCorrect={false}
           returnKeyType="search"
+          underlineColorAndroid="transparent"
+          textAlignVertical="center"
           style={[styles.searchInput, { color: colors.foreground }]}
         />
       </View>
@@ -86,8 +88,8 @@ const styles = StyleSheet.create({
   eyebrow: { fontSize: 11, letterSpacing: 1.8, fontWeight: '800', marginBottom: 7 },
   title: { fontSize: 25, lineHeight: 30, fontWeight: '700', letterSpacing: -0.5, maxWidth: 290 },
   headerIcon: { height: 43, width: 43, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
-  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 14, borderRadius: 15, borderWidth: 1, minHeight: 54, marginBottom: 13 },
-  searchInput: { flex: 1, minWidth: 0, height: 52, paddingHorizontal: 0, fontSize: 15 },
+  searchWrap: { flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 14, borderRadius: 15, borderWidth: 1, height: 56, marginBottom: 13 },
+  searchInput: { flex: 1, minWidth: 0, height: 54, paddingHorizontal: 0, paddingVertical: 0, fontSize: 15, lineHeight: 20, includeFontPadding: false },
   filters: { flexDirection: 'row', gap: 7, marginBottom: 9 },
   sortRow: { flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 7 },
   sortLabel: { fontSize: 12, fontWeight: '600', marginRight: 2 },
